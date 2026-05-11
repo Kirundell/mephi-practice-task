@@ -5,15 +5,16 @@
 ## Структура
 
 ```
-solution/
+.
 ├── notebook.ipynb        # EDA + ML + интерпретация (аналитический отчёт)
 ├── train.py              # обучение модели -> model.pkl
+├── test_api.py           # тест API на реальных данных
 ├── api/
 │   ├── main.py           # FastAPI: POST /predict, GET /health
 │   ├── schemas.py        # Pydantic-схемы
 │   └── preprocessing.py  # clean_sessions + build_features (общий код)
 ├── target_actions.py     # список целевых event_action
-├── model.pkl             # артефакт после train.py
+├── model.pkl             # обученная модель
 ├── metrics.json          # метрики на test
 ├── requirements.txt
 └── README.md
@@ -24,28 +25,35 @@ solution/
 ## Установка
 
 ```powershell
-cd "2 sem/Practice task/solution"
+git clone https://github.com/Kirundell/mephi-practice-task.git
+cd mephi-practice-task
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-## Обучение
+## Данные
 
-```powershell
-python train.py                    # с Optuna (30 trials по умолчанию)
-python train.py --quick            # без Optuna
-python train.py --n-trials 50      # больше trials
+Датасет (`ga_sessions.pkl`, `ga_hits.csv`) **в репозитории не лежит** из-за большого объема. Для запуска `notebook.ipynb`, `train.py` или `test_api.py` положите файлы в **родительскую** директорию репозитория:
+
+```
+parent/
+├── ga_sessions.pkl
+├── ga_hits.csv
+└── mephi-practice-task/   ← этот репозиторий
+    ├── train.py
+    └── ...
 ```
 
-После завершения создаются `model.pkl` и `metrics.json`.
+API (`uvicorn api.main:app`) **данные не требует** - он работает на готовом `model.pkl`.
 
-## API
+## Запуск API
 
 ```powershell
 uvicorn api.main:app --host 0.0.0.0 --port 8000
 ```
 
+Документация Swagger: http://localhost:8000/docs
 
 ### Эндпоинты
 
@@ -84,6 +92,28 @@ curl -X POST http://localhost:8000/predict \
 }
 ```
 
+### Тест API на реальных данных
+
+Требует наличия `ga_sessions.pkl` в родительской папке. Запускать в отдельном терминале, пока uvicorn работает:
+
+```powershell
+python test_api.py --n 100
+```
+
+Скрипт берёт N случайных визитов, прогоняет через `/predict` и печатает latency (p50/p95/p99) + распределение предсказаний.
+
+## Переобучение модели (опционально)
+
+`model.pkl` уже лежит в репозитории. Для обучения с нуля нужно:
+
+```powershell
+python train.py                    # с Optuna (30 trials по умолчанию)
+python train.py --quick            # без Optuna, быстрый прогон
+python train.py --n-trials 50      # больше trials
+```
+
+После завершения перезаписываются `model.pkl` и `metrics.json`.
+
 ## Метрики
 
-Финальные значения см. в `metrics.json` после обучения.
+Финальные значения в `metrics.json`.
