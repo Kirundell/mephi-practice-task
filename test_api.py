@@ -44,9 +44,12 @@ def main():
 
     for i, row in sample.iterrows():
         payload = row.where(pd.notna(row), None).to_dict()
-        # visit_date в pandas Timestamp -> строка
+        # visit_date / visit_time приходят как datetime.date/time -
+        # JSON их не умеет, переводим в строки нужного формата.
         if hasattr(payload.get("visit_date"), "strftime"):
             payload["visit_date"] = payload["visit_date"].strftime("%Y-%m-%d")
+        if hasattr(payload.get("visit_time"), "strftime"):
+            payload["visit_time"] = payload["visit_time"].strftime("%H:%M:%S")
         payload["visit_number"] = int(payload["visit_number"])
 
         t0 = time.perf_counter()
