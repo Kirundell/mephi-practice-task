@@ -12,7 +12,7 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 
-from api.preprocessing import build_features, clean_sessions
+from api.preprocessing import build_features, fill_nans
 from api.schemas import HealthResponse, PredictionResponse, VisitRequest
 
 MODEL_PATH = Path(__file__).resolve().parent.parent / "model.pkl"
@@ -50,7 +50,7 @@ def predict(visit: VisitRequest) -> PredictionResponse:
         )
 
     raw = pd.DataFrame([visit.model_dump()])
-    cleaned = clean_sessions(raw)
+    cleaned = fill_nans(raw)
     features = build_features(cleaned)
 
     proba = float(_state["model"].predict_proba(features)[0, 1])

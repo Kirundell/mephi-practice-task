@@ -131,6 +131,21 @@ def clean_sessions(
     return df
 
 
+def fill_nans(df: pd.DataFrame) -> pd.DataFrame:
+    """Лёгкая версия clean_sessions для serve-time в API.
+
+    Без дедупликации и удаления колонок (бессмысленно на одной строке):
+    только заполняем NaN на 'unknown' для строк и 0 для чисел, чтобы
+    схема колонок совпала с обучающим набором.
+    """
+    df = df.copy()
+    for col in df.select_dtypes(include=["object"]).columns:
+        df[col] = df[col].fillna("unknown")
+    for col in df.select_dtypes(include=["number"]).columns:
+        df[col] = df[col].fillna(0)
+    return df
+
+
 def _parse_hour(value) -> int:
     """visit_time в формате 'HH:MM:SS' -> час.
     Для NaN/мусора возвращаем 12 как дефолт."""
