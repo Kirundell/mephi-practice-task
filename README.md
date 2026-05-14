@@ -109,6 +109,12 @@ python test_api.py --n 100
 
 Скрипт берёт N случайных визитов, прогоняет через `/predict` и печатает latency (p50/p95/p99) + распределение предсказаний.
 
+### Пример запуска
+
+<img width="733" height="594" alt="image" src="https://github.com/user-attachments/assets/42e5a337-595d-49d2-8d87-ce0049a2af21" />
+<img width="902" height="534" alt="image" src="https://github.com/user-attachments/assets/86b33eac-54ea-4f17-bec8-48b3deddba45" />
+
+
 ## Переобучение модели (опционально)
 
 `model.pkl` уже лежит в репозитории. Для обучения с нуля нужно:
