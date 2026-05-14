@@ -92,6 +92,13 @@ curl -X POST http://localhost:8000/predict \
 }
 ```
 
+
+### Пример запуска
+<img width="1094" height="484" alt="image" src="https://github.com/user-attachments/assets/7ef3febe-f1b0-4ef8-968d-09300f2ffe3d" />
+
+<img width="915" height="143" alt="image" src="https://github.com/user-attachments/assets/05b7c7ea-3419-4f2d-8c28-12f223492fe6" />
+
+
 ### Тест API на реальных данных
 
 Требует наличия `ga_sessions.pkl` в родительской папке. Запускать в отдельном терминале, пока uvicorn работает:
